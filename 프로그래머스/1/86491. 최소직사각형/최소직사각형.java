@@ -1,25 +1,15 @@
 class Solution {
 
     public int solution(int[][] sizes) {
-        int answer = 0;
-        int zero = 0;
-        int one = 0;
+        int length = 0;
+        int height = 0;
         
         for (int[] size: sizes) {
-            int z = size[0];
-            int o = size[1];
-            
-            // 작은 값 [0]으로 몰아버리기
-            if(z > o) {
-                size[0] = o;
-                size[1] = z;
-            }
-            
-            zero = Integer.max(zero, size[0]);
-            one = Integer.max(one, size[1]);
+            length = Integer.max(length, Integer.min(size[0], size[1]));
+            height = Integer.max(height, Integer.max(size[0], size[1]));
         }
         
-        answer = zero * one;
+        int answer = length * height;
         
         return answer;
     }
