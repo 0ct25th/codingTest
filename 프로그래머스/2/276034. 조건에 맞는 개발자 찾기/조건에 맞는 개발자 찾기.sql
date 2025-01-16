@@ -1,0 +1,11 @@
+SELECT ID, EMAIL, FIRST_NAME, LAST_NAME
+FROM DEVELOPERS
+
+WHERE SKILL_CODE & (SELECT CODE
+                    FROM SKILLCODES
+                    WHERE CODE = 256)
+    OR SKILL_CODE & (SELECT CODE
+                    FROM SKILLCODES
+                    WHERE CODE = 1024)
+                
+ORDER BY ID ASC;
