@@ -1,20 +1,23 @@
 import java.util.*;
 
 class Solution {
-    int n = 0, m = 0;
+    
+    static int N, M;
+    static boolean[][] isVisited;
     static int[] dr = {-1, 1, 0, 0};
     static int[] dc = {0, 0, -1, 1};
-    static boolean[][] isVisited;
     
     public int solution(int[][] maps) {
-        n = maps.length;
-        m = maps[0].length;
-        isVisited = new boolean[n][m];
+        N = maps.length;
+        M = maps[0].length;
         
-        return bfs(0, 0, maps);
+        isVisited = new boolean[N][M];
+        int answer = bfs(maps, 0, 0);
+        
+        return answer;
     }
     
-    public int bfs(int sr, int sc, int[][] maps) {
+    static int bfs(int[][] maps, int sr, int sc) {
         Queue<Coord> dq = new ArrayDeque<>();
         isVisited[sr][sc] = true;
         dq.offer(new Coord(sr, sc, 1));
@@ -23,42 +26,40 @@ class Solution {
             Coord cur = dq.poll();
             int r = cur.r;
             int c = cur.c;
-            int v = cur.v;
+            int cnt = cur.cnt;
             
             // 도착한 경우
-            if(r == n - 1 && c == m - 1)
-                return v;
+            if(r == N - 1 && c == M - 1) 
+                return cnt;
             
             // 4방향 탐색
             for(int d = 0; d < 4; d++) {
                 int nr = r + dr[d];
                 int nc = c + dc[d];
                 
+                // 유효범위 외 || 이미 방문 || 못가는 곳
                 if(!isValidCoord(nr, nc) || isVisited[nr][nc] || maps[nr][nc] == 0)
-                    continue;
+                    continue;   // 넘김
                 
-                isVisited[nr][nc] = true;
-                dq.offer(new Coord(nr, nc, v + 1));
+                isVisited[nr][nc] = true;   // 방문 체크
+                dq.offer(new Coord(nr, nc, cnt + 1));
             }
         }
         
-        // 도착하지 못한 경우
         return -1;
     }
     
-    public boolean isValidCoord(int r, int c) {
-        return -1 < r && r < n && -1 < c && c < m;
+    static boolean isValidCoord(int r, int c) {
+        return -1 < r && r < N && -1 < c && c < M;
     }
     
-    public static class Coord {
-        int r;
-        int c;
-        int v;
+    static class Coord {
+        int r, c, cnt;
         
-        Coord(int r, int c, int v) {
+        Coord(int r, int c, int cnt) {
             this.r = r;
             this.c = c;
-            this.v = v;
+            this.cnt = cnt;
         }
     }
 }
