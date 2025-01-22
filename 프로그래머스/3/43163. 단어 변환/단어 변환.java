@@ -1,3 +1,5 @@
+import java.util.*;
+
 class Solution {
     
     static int answer = 0;
@@ -5,37 +7,55 @@ class Solution {
     
     public int solution(String begin, String target, String[] words) {
         isVisited = new boolean[words.length];
-        dfs(begin, target, words, 0);
+        bfs(begin, target, words);
         
         return answer;
     }
     
-    static void dfs(String begin, String target, String[] words, int count) {
-        // 변환 가능한 경우
-        if(begin.equals(target)) {
-            answer = count;
-            
-            return;
-        }
+    static void bfs(String begin, String target, String[] words) {
+        Queue<Word> dq = new ArrayDeque<>();
+        dq.offer(new Word(0, begin));
         
-        // words 배열 탐색
-        for(int i = 0; i < words.length; i++) {
-            // 이미 탐색한 경우 넘기기
-            if(isVisited[i])
-                continue;
+        while(!dq.isEmpty()) {
+            Word cur = dq.poll();
+            int count = cur.count;
+            String word = cur.word;
             
-            // 몇 글자 다른지 판단
-            int spelling = 0;
-            for(int j = 0; j < begin.length(); j++) {
-                if(begin.charAt(j) != words[i].charAt(j))
-                    spelling++;
+            // target을 찾은 경우
+            if (word.equals(target)) {
+                answer = count;
+                return;
             }
             
-            // 1글자만 다른 경우
-            if(spelling == 1) {
-                isVisited[i] = true;
-                dfs(words[i], target, words, count + 1);
+            // words 배열 탐색
+            for(int i = 0; i < words.length; i++) {
+                // 이미 방문한 경우
+                if(isVisited[i])
+                    continue;
+                
+                // 다른 알파벳 개수 세기
+                int sCount = 0;
+                for(int j = 0; j < word.length(); j++) {
+                    if(word.charAt(j) != words[i].charAt(j))
+                        sCount++;
+                }
+                
+                // 1개만 다른 경우만 취급
+                if(sCount == 1) {
+                    isVisited[i] = true;
+                    dq.offer(new Word(count + 1, words[i]));
+                }
             }
+        }
+    }
+    
+    static class Word{
+        int count;
+        String word;
+        
+        Word(int count, String word) {
+            this.count = count;
+            this.word = word;
         }
     }
 }
