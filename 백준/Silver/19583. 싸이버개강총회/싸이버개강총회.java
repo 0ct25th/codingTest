@@ -22,18 +22,23 @@ public class Main {
 		set = new HashSet<>();
 		while ((input = br.readLine()) != null) {
 			String[] str = input.split(" ");
-			
-            // 종료 조건
-			if(str.length < 2)
+
+			// 종료 조건
+			if (str.length < 2)
 				break;
 
-			if (str[0].compareTo(S) <= 0)
-				set.add(str[1]);
+			String chatTime = str[0]; // 채팅 기록 시간
+			String nickName = str[1]; // 학회원 닉네임
 
-			else if (str[0].compareTo(E) >= 0 && str[0].compareTo(Q) <= 0) {
-				if (set.contains(str[1])) {
+			// 입장 확인
+			if (chatTime.compareTo(S) <= 0) {
+				set.add(nickName); // 개강총회 시작 전에 입장 확인
+			}
+			// 퇴장 확인
+			else if (chatTime.compareTo(E) >= 0 && chatTime.compareTo(Q) <= 0) {
+				if (set.contains(nickName)) {
 					result++;
-					set.remove(str[1]);
+					set.remove(nickName); // 퇴장 처리
 				}
 			}
 		}
