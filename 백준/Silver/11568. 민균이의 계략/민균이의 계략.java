@@ -4,7 +4,8 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static int[] cards, dp;
+	static int[] cards;
+	static List<Integer> lis;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,23 +20,35 @@ public class Main {
 
 		/////////// end of Input
 
-		LIS();
+		binarySearch();
 	}
 
-	static void LIS() {
-		int max = 0;
-		dp = new int[N];
+	static void binarySearch() {
+		lis = new ArrayList<>();
+		lis.add(cards[0]);
 
-		for (int i = 0; i < N; i++) {
-			dp[i] = 1;
-
-			for (int j = 0; j < i; j++)
-				if (cards[j] < cards[i] && dp[i] < dp[j] + 1)
-					dp[i] = dp[j] + 1;
-
-			max = Math.max(max, dp[i]);
+		for (int i = 1; i < N; i++) {
+			int key = cards[i];
+			
+			if(lis.get(lis.size() - 1) < key)
+				lis.add(key);
+			else {
+				int start = 0;
+				int end = lis.size() - 1;
+				
+				while(start < end) {
+					int mid = (start + end) / 2;
+					
+					if(lis.get(mid) < key)
+						start = mid + 1;
+					else
+						end = mid;
+				}
+				
+				lis.set(end, key);
+			}
 		}
 
-		System.out.println(max);
+		System.out.println(lis.size());
 	}
 }
