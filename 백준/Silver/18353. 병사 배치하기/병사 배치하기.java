@@ -3,8 +3,9 @@ import java.util.*;
 
 public class Main {
 
-	static int N, dp[];
-	static List<Integer> arr;
+	static int N;
+	static int[] arr;
+	static List<Integer> LIS;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,31 +14,47 @@ public class Main {
 		N = Integer.parseInt(br.readLine());
 
 		st = new StringTokenizer(br.readLine());
-		arr = new ArrayList<>();
-		for (int i = 1; i <= N; i++)
-			arr.add(Integer.parseInt(st.nextToken()));
+		arr = new int[N];
+		for (int i = 0; i < N; i++)
+			arr[i] = Integer.parseInt(st.nextToken());
 
 		///////////////////////////////////// end of Input
 
-		LIS();
+		BinarySearch();
 	}
 
-	static void LIS() {
-		int max = 0;
-		dp = new int[N];
+	static void BinarySearch() {
+		LIS = new ArrayList<>();
+		LIS.add(arr[0]);
 
-		for (int i = 0; i < N; i++) {
-			dp[i] = 1;
+		for (int i = 1; i < N; i++) {
+			int key = arr[i];
 
-			for (int j = 0; j < i; j++) {
-				if (arr.get(j) > arr.get(i) && dp[i] < dp[j] + 1)
-					dp[i] = dp[j] + 1;
+			// 현재 원소가 LIS의 마지막 원소보다 작은 경우
+			if (key < LIS.get(LIS.size() - 1))
+				LIS.add(key); // LIS에 추가
+
+			// 현재 원소가 LIS의 마지막 원소보다 큰 경우
+			else {
+				// 이진 탐색을 통해 key가 들어갈 위치 찾기
+				int start = 0;
+				int end = LIS.size() - 1;
+
+				while (start < end) {
+					int mid = (start + end) / 2;
+
+					if (LIS.get(mid) > key)
+						start = mid + 1;
+					else
+						end = mid;
+				}
+
+				// LIS의 end번 원소랑 key값 자리 바꾸기
+				LIS.set(end, key);
 			}
-
-			max = Math.max(max, dp[i]);
 		}
 
-		System.out.println(N - max);
+		System.out.println(N - LIS.size());
 	}
 
 }
