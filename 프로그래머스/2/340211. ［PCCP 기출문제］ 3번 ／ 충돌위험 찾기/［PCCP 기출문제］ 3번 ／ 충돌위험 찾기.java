@@ -3,116 +3,112 @@ import java.util.*;
 class Solution {
     public int solution(int[][] points, int[][] routes) {
         int answer = 0; // 모든 로봇이 운송을 마칠 때까지 발생하는 위험한 상황의 횟수
+        int LastStep = routes[0].length; // 로봇의 운송 경로 갯수(모두 같음)
+        List<Robot> robots = new ArrayList<>(); // 운송 시스템
+        Map<String, Integer> crashChk = new HashMap<>(); // 충돌 체크 맵
         
-        int routeStep = routes[0].length; // 총 경유지 개수 -> 모든 경유지 다 돌았는지 체크
-        List<Robot> robots = new ArrayList<>();
-        Map<Integer, Integer> startCollisions = new HashMap<>(); // 충돌 체크 맵
-        
-        // 초기 시작 위치
+        // 첫 번째 포인트
         for(int[] route: routes) {
-            int start = route[0] - 1;
-            int r = points[start][0];
-            int c = points[start][1];
+            int pointNum = route[0] - 1;
+            int r = points[pointNum][0];
+            int c = points[pointNum][1];
             
             robots.add(new Robot(r, c, 1));
-            // route가 존재하지 않으면 1, 존재하면 기존값 + 1
-            startCollisions.merge(route[0], 1, Integer::sum);
-            // startCollisions.merge(route[0], 1, (oldValue, newValue) -> oldValue + newValue);
+            crashChk.merge(route[0] + "", 1, Integer::sum);
         }
         
-        // 초기 시작 위치에서 충돌 횟수 탐색
-        for(int value: startCollisions.values()) 
-            if(value > 1) // 같은 좌표가 2개 이상인 경우
-                answer++; // 충돌 횟수 증가
+        // 첫번째 포인트에서 충돌이 발생한 경우
+        for(int value: crashChk.values())
+            if(value > 1)
+                answer++; // 횟수 증가
         
-        // 모든 로봇이 목적지에 도착할 때까지 반복
+        // 모든 로봇 운송 마칠 때까지 반복
         while(!robots.isEmpty()) {
-            Map<String, Integer> collisionsMap = new HashMap<>(); // 충돌 체크 맵
-            boolean[] arrived = new boolean[robots.size()]; // 모든 로봇 도착 체크 배열
+            crashChk = new HashMap<>(); // 충돌 체크 맵
+            boolean[] isArrived = new boolean[robots.size()]; // 도착 체크 배열
             
-            // 로봇 이동하기
             for(int i = 0; i < robots.size(); i++) {
-                // 현재 로봇 정보
-                Robot cur = robots.get(i);
-                int next = cur.next;
+                Robot cur = robots.get(i); // 현재 로봇
                 
-                // 현재 로봇이 목적지에 도달한 경우
-                if(next >= routeStep) {
-                    arrived[i] = true; // 도착 체크
+                // 현재 로봇이 마지막 운송지에 도착한 경우
+                if(cur.next == LastStep) {
+                    isArrived[i] = true; // 도착 체크
                     continue; // 넘기기
                 }
                 
                 // 다음 경유지 좌표값 찾기
-                int pointIdx = routes[i][next] - 1;
+                int pointIdx = routes[i][cur.next] - 1;
                 int targetR = points[pointIdx][0];
                 int targetC = points[pointIdx][1];
                 
-                cur.moveToTarget(targetR, targetC); // 다음 경유지로 이동
+                // 다음 경유지로 이동
+                cur.moveToTarget(targetR, targetC);
                 
-                // 이동 후 현재 좌표
-                String curCoord = cur.r + " " + cur.c;
-                collisionsMap.merge(curCoord, 1, Integer::sum); // 충돌 체크
+                // 이동한 좌표 충돌 체크
+                crashChk.merge(cur.r + " " + cur.c, 1, Integer::sum);
                 
-                // 현재 좌표가 포인트에 도착한 경우
-                if(cur.isArrived(targetR, targetC))
-                    cur.plusToNext(); // 다음 경유지 이동
+                // 이동한 좌표가 목표 좌표인 경우
+                if(cur.hasArrived(targetR, targetC))
+                    cur.moveToNext(); // 다음 경유지로 이동
             }
             
-            // 충돌 확인
-            for(int value: collisionsMap.values())
+            // 충돌 횟수 확인
+            for(int value: crashChk.values())
                 if(value > 1)
                     answer++;
             
-            // 모든 로봇 도착 체크
+            // 모든 로봇 운송 마쳤는지 확인
             boolean isAllArrived = true;
-            for(boolean status: arrived) {
-                if(!status) {
+            for(boolean chk: isArrived) {
+                if(!chk) {
                     isAllArrived = false;
                     break;
                 }
             }
             
-            // 모든 로봇 도착한 경우
+            // 모든 로봇 방문한 경우
             if(isAllArrived) break; // 반복 종료
         }
         
+        
         return answer;
     }
+    
     static class Robot {
-        int r, c; // 해당 로봇 좌표
+        int r, c; // 로봇 좌표
         int next; // 다음 경유지
-
+        
         Robot(int r, int c, int next) {
             this.r = r;
             this.c = c;
             this.next = next;
         }
-
-        // 위치 이동(상, 하, 좌, 우 순)
+        
+        // 목표로 이동(행 좌표 먼저)
         void moveToTarget(int targetR, int targetC) {
-            // 행 이동(먼저 이동 !)
-            if (r > targetR) {
+            // 행 이동
+            if (targetR < r) { // 상
                 r--;
                 return;
-            } else if(r < targetR) {
+            } else if(r < targetR) { // 하
                 r++;
                 return;
-            } 
-
+            }
+            
             // 열 이동
-            if(c > targetC) 
+            if(targetC < c) // 좌
                 c--;
-             else if(c < targetC) 
+            else if(c < targetC) // 우
                 c++;
         }
-
-        // 도착 여부 확인
-        boolean isArrived(int targetR, int targetC) {
+        
+        // (targetR, targetC) 좌표 도착 확인
+        boolean hasArrived(int targetR, int targetC) {
             return r == targetR && c == targetC;
         }
-
+        
         // 다음 경유지로 이동
-        void plusToNext() {
+        void moveToNext() {
             next++;
         }
     }
