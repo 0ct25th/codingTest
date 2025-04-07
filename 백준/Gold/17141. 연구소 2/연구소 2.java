@@ -36,8 +36,8 @@ public class Main {
 			}
 		}
 
-		cnt -= M;
-		result = Integer.MAX_VALUE;
+		cnt -= M; // 빈칸 개수(바이러스 있는 공간도 놓을 공간을 제외하고 빈칸임)
+		result = Integer.MAX_VALUE; // 연구소의 모든 빈 칸에 바이러스가 있게 되는 최소 시간
 		virous = new int[M]; // 바이러스 공간 인덱스를 저장할 배열
 		dfs(0, 0);
 
@@ -54,6 +54,7 @@ public class Main {
 			return;
 		}
 
+		// 바이러스 놓을 공간 선택
 		for (int i = start; i < virousSpace.size(); i++) {
 			virous[depth] = i;
 			dfs(depth + 1, i + 1);
@@ -61,8 +62,8 @@ public class Main {
 	}
 
 	static int bfs() {
-		int tmpCnt = cnt;
-		int time = 0;
+		int tmpCnt = cnt; // 현재 바이러스 놓았을 때 빈칸 갯수
+		int time = 0; // 바이러스 퍼진 시간초
 		Queue<Coord> dq = new ArrayDeque<>();
 		boolean[][] isVisited = new boolean[N][N];
 
@@ -81,20 +82,23 @@ public class Main {
 			int c = cur.c;
 			int t = cur.t;
 
+			// 4방향 탐색
 			for (int d = 0; d < 4; d++) {
 				int nr = r + dr[d];
 				int nc = c + dc[d];
 
+				// 유효범위 밖 || 이미 방문 || 벽인 경우
 				if (!isValidCoord(nr, nc) || isVisited[nr][nc] || map[nr][nc] == 1)
 					continue;
 
-				tmpCnt--;
-				time = Math.max(time, t + 1);
-				isVisited[nr][nc] = true;
-				dq.offer(new Coord(nr, nc, t + 1));
+				tmpCnt--; // 빈칸 개수 감소
+				time = Math.max(time, t + 1); // 시간 초 갱신
+				isVisited[nr][nc] = true; // 방문 체크
+				dq.offer(new Coord(nr, nc, t + 1)); // 덱 삽입
 			}
 		}
 
+		// 바이러스를 어떻게 놓아도 모든 빈 칸에 바이러스를 퍼뜨릴 수 없는 경우
 		return tmpCnt > 0 ? Integer.MAX_VALUE : time;
 	}
 
