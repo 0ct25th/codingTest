@@ -3,8 +3,8 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M;
-	static int[][] map;
+	static int N, M, result;
+	static boolean[][] map;
 	static int[] dr = { -1, 1, 0, 0 };
 	static int[] dc = { 0, 0, -1, 1 };
 
@@ -16,73 +16,81 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		map = new int[N][M];
-		for (int r = 0; r < N; r++) {
+		map = new boolean[N + 1][M + 1];
+		for (int r = 1; r <= N; r++) {
 			String str = br.readLine();
-			for (int c = 0; c < M; c++) {
-				map[r][c] = str.charAt(c) - '0';
+			for (int c = 1; c <= M; c++) {
+				char ch = str.charAt(c - 1);
+
+				if (ch == '0')
+					map[r][c] = true;
 			}
 		}
-		////////////// end of Input
 
-		System.out.println(bfs(0, 0));
+		if (bfs(1, 1))
+			System.out.println(result);
+		else
+			System.out.println(-1);
 	}
 
-	static int bfs(int sr, int sc) {
+	static boolean bfs(int sr, int sc) {
 		Queue<Coord> dq = new ArrayDeque<>();
-		int[][][] isVisited = new int[2][N][M];
+		boolean[][][] isVisited = new boolean[2][N + 1][M + 1];
 
-		isVisited[0][sr][sc] = 1;
-		dq.offer(new Coord(sr, sc, 0));
+		isVisited[0][sr][sc] = true;
+		dq.offer(new Coord(0, sr, sc, 1));
 
 		while (!dq.isEmpty()) {
 			Coord cur = dq.poll();
 			int r = cur.r;
 			int c = cur.c;
-			int cnt = cur.cnt;
+			int v = cur.v;
+			int t = cur.t;
 
-			// 도착한 경우
-			if (r == N - 1 && c == M - 1)
-				return isVisited[cnt][r][c];
+			if (r == N && c == M) {
+				result = t;
+				return true; // 가능
+			}
 
 			for (int d = 0; d < 4; d++) {
 				int nr = r + dr[d];
 				int nc = c + dc[d];
 
-				// 유효범위 벗어남 || 이미 방문
-				if (!isValidCoord(nr, nc) || isVisited[cnt][nr][nc] != 0)
-					continue; // 넘기기
+				if (!isValidCoord(nr, nc))
+					continue;
 
 				// 이동할 수 있는 곳
-				if (map[nr][nc] == 0) {
-					isVisited[cnt][nr][nc] = isVisited[cnt][r][c] + 1;
-					dq.offer(new Coord(nr, nc, cnt));
-				}
+				if (map[r][c] && !isVisited[v][nr][nc]) {
+					isVisited[v][nr][nc] = true;
+					dq.offer(new Coord(v, nr, nc, t + 1));
+				} else {
+					// 벽을 뚫을 수 있는 경우
+					if (v == 0 && !isVisited[v + 1][nr][nc]) {
+						isVisited[v + 1][nr][nc] = true;
+						dq.offer(new Coord(v + 1, nr, nc, t + 1));
+					}
 
-				// 이동할 수 없는 벽
-				else if (map[nr][nc] == 1 && cnt < 1) {
-					isVisited[cnt + 1][nr][nc] = isVisited[cnt][r][c] + 1;
-					dq.offer(new Coord(nr, nc, cnt + 1));
 				}
 			}
 		}
 
-		return -1;
+		return false; // 불가능
 	}
 
 	static boolean isValidCoord(int r, int c) {
-		return -1 < r && r < N && -1 < c && c < M;
+		return 0 < r && r <= N && 0 < c && c <= M;
 	}
 
 	static class Coord {
 		int r, c;
-		int cnt; // 벽 부순 횟수
+		int v; // 벽 뚫은 횟수
+		int t; // 경로
 
-		Coord(int r, int c, int cnt) {
+		Coord(int v, int r, int c, int t) {
+			this.v = v;
 			this.r = r;
 			this.c = c;
-			this.cnt = cnt;
+			this.t = t;
 		}
 	}
-
 }
