@@ -1,52 +1,51 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
 	static int N, M;
-	static Map<Integer, Integer> A;
+	static int[] A;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st;
 		StringBuilder sb = new StringBuilder();
 
-		// 첫째 줄에 자연수 N(1 ≤ N ≤ 100,000)이 주어진다.
 		N = Integer.parseInt(br.readLine());
 
-		// 다음 줄에는 N개의 정수 A[1], A[2], …, A[N]이 주어진다.
-		A = new HashMap<Integer, Integer>();
+		A = new int[N];
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
-			A.put(Integer.parseInt(st.nextToken()), 1);
-		}
+		for (int i = 0; i < N; i++)
+			A[i] = Integer.parseInt(st.nextToken());
 
-		// 다음 줄에는 M(1 ≤ M ≤ 100,000)이 주어진다.
+		Arrays.sort(A);
+
 		M = Integer.parseInt(br.readLine());
-
-		// 음 줄에는 M개의 수들이 주어지는데, 이 수들이 A안에 존재하는지 알아내면 된다.
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < M; i++) {
-			if (A.containsKey(Integer.parseInt(st.nextToken())))
-				sb.append(1).append("\n");
-			else
-				sb.append(0).append("\n");
+			int num = Integer.parseInt(st.nextToken());
 
+			sb.append(binarySearch(num) ? "1\n" : "0\n");
 		}
 
-		// 결과 출력
-		bw.write(sb.toString());
-		bw.flush();
+		System.out.println(sb);
+	}
 
-		// close
-		br.close();
-		bw.close();
+	static boolean binarySearch(int x) {
+		int start = 0;
+		int end = N - 1;
+
+		while (start <= end) {
+			int mid = (start + end) / 2;
+
+			if (A[mid] == x)
+				return true;
+			else if (A[mid] < x)
+				start = mid + 1;
+			else
+				end = mid - 1;
+		}
+
+		return false;
 	}
 }
