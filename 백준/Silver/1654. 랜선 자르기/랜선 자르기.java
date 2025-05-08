@@ -4,49 +4,48 @@ import java.util.*;
 public class Main {
 
 	static int K, N;
-	static long end;
-	static int[] cable;
+	static long result;
+	static long[] arr;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		st = new StringTokenizer(br.readLine());
-		K = Integer.parseInt(st.nextToken()); // 오영식이 이미 가지고 있는 랜선의 개수
+		K = Integer.parseInt(st.nextToken()); // 랜선의 개수
 		N = Integer.parseInt(st.nextToken()); // 필요한 랜선의 개수
 
-		// K줄에 걸쳐 이미 가지고 있는 각 랜선의 길이가 센티미터 단위의 정수로 입력
-		cable = new int[K];
-		for (int i = 0; i < K; i++) {
-			cable[i] = Integer.parseInt(br.readLine());
+		arr = new long[K];
+		for (int i = 0; i < K; i++)
+			arr[i] = Long.parseLong(br.readLine());
 
-			if (end < cable[i])
-				end = cable[i];
-		}
-		end++; // 가장 큰 값 + 1
+		Arrays.sort(arr);
+		binarySearch();
 
-		System.out.println(binarySearch() - 1);
+		System.out.println(result);
 	}
 
-	static long binarySearch() {
+	static void binarySearch() {
 		long start = 1;
-		long mid = 0;
+		long end = arr[K - 1]; // 가장 긴 랜선의 길이
 
-		while (start < end) {
-			mid = (start + end) / 2; // 범위 내 중간 길이
-			long count = 0;
+		while (start <= end) {
+			long mid = (start + end) / 2;
 
-			// 구해진 중간 길이로 잘라 총 몇개가 만들어지는지 구함
-			for (int i = 0; i < K; i++)
-				count += (cable[i] / mid);
-
-			if (count < N)
-				end = mid;
-			else
+			if (cut(mid) >= N) {
+				result = Math.max(result, mid);
 				start = mid + 1;
+			} else
+				end = mid - 1;
 		}
-		
-		return start;
 	}
 
+	static int cut(long x) {
+		int cnt = 0;
+
+		for (int i = 0; i < K; i++)
+			cnt += arr[i] / x;
+
+		return cnt;
+	}
 }
