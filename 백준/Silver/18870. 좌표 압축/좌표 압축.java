@@ -4,9 +4,8 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static int[] arr;
+	static int[] X, arr;
 	static Set<Integer> set;
-	static Map<Integer, Integer> map;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -14,28 +13,43 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 
 		N = Integer.parseInt(br.readLine());
-		arr = new int[N];
-		set = new TreeSet<>();
 
+		X = new int[N];
+		set = new HashSet<>();
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++) {
 			int num = Integer.parseInt(st.nextToken());
-
-			arr[i] = num;
 			set.add(num);
+			X[i] = num;
 		}
 
+		arr = new int[set.size()];
 		int idx = 0;
-		map = new HashMap<>();
-		Iterator<Integer> iter = set.iterator();
-		while (iter.hasNext()) {
-			map.put(iter.next().intValue(), idx);
-			idx++;
-		}
+		for (int i : set)
+			arr[idx++] = i;
+		Arrays.sort(arr);
 
-		for (int i : arr)
-			sb.append(map.get(i)).append(" ");
+		for (int i = 0; i < N; i++)
+			sb.append(binarySearch(X[i])).append(" ");
 
 		System.out.println(sb);
+	}
+
+	static int binarySearch(int x) {
+		int start = 0;
+		int end = set.size() - 1;
+
+		while (start <= end) {
+			int mid = (start + end) / 2;
+
+			if (arr[mid] == x)
+				return mid;
+			else if (arr[mid] < x)
+				start = mid + 1;
+			else
+				end = mid - 1;
+		}
+
+		return -1;
 	}
 }
