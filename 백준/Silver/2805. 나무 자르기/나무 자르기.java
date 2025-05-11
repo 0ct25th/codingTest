@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
 
 	static int N, M;
-	static int[] trees;
+	static long h[], result;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,36 +12,41 @@ public class Main {
 
 		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken()); // 나무의 수
-		M = Integer.parseInt(st.nextToken()); // 가져갈 나무의 길이
+		M = Integer.parseInt(st.nextToken()); // 가져가려는 나무의 길이
 
-		trees = new int[N];
+		h = new long[N];
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
-			trees[i] = Integer.parseInt(st.nextToken());
+			h[i] = Long.parseLong(st.nextToken());
 
-		Arrays.sort(trees);
-
-		System.out.println(binarySearch());
+		Arrays.sort(h);
+		binarySearch();
+		System.out.println(result);
 	}
 
-	static long binarySearch() {
+	static void binarySearch() {
 		long start = 0;
-		long end = trees[N - 1];
+		long end = h[N - 1];
 
-		while (start < end) {
+		while (start <= end) {
 			long mid = (start + end) / 2;
-			long sum = 0;
 
-			for (int i = 0; i < N; i++)
-				if (trees[i] - mid > 0)
-					sum += trees[i] - mid;
-
-			if (sum < M)
-				end = mid;
-			else
+			if (cut(mid) >= M) {
+				result = mid;
 				start = mid + 1;
+			} else
+				end = mid - 1;
+		}
+	}
+
+	static long cut(long x) {
+		long mod = 0;
+
+		for (int i = 0; i < N; i++) {
+			if (h[i] - x > 0)
+				mod += h[i] - x;
 		}
 
-		return start - 1;
+		return mod;
 	}
 }
