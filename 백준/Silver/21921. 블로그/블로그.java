@@ -3,7 +3,8 @@ import java.util.*;
 
 public class Main {
 
-	static int N, X, arr[], max, cnt;
+	static int N, X, result, cnt;
+	static int[] v;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,40 +14,36 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		X = Integer.parseInt(st.nextToken());
 
-		arr = new int[N];
+		v = new int[N];
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
-			arr[i] = Integer.parseInt(st.nextToken());
-		}
+		for (int i = 0; i < N; i++)
+			v[i] = Integer.parseInt(st.nextToken());
 
 		slidingWindow();
 
-		if (max == 0)
+		if (result > 0) {
+			System.out.println(result);
+			System.out.println(cnt);
+		} else
 			System.out.println("SAD");
-		else 
-			System.out.println(max + "\n" + cnt);
 	}
 
 	static void slidingWindow() {
-		int sum = 0;
-
 		for (int i = 0; i < X; i++)
-			sum += arr[i];
+			result += v[i];
 
-		max = sum;
 		cnt = 1;
-
+		int sum = result;
 		for (int i = 1; i <= N - X; i++) {
-			// 왼쪽 빼기
-			sum -= arr[i - 1];
-			// 오른쪽 더하기
-			sum += arr[i + X - 1];
+			sum -= v[i - 1];
+			sum += v[i + X - 1];
 
-			if (sum > max) {
-				max = sum;
-				cnt = 1;
-			} else if (sum == max)
+			if (result == sum)
 				cnt++;
+			else if (result < sum) {
+				result = sum;
+				cnt = 1;
+			}
 		}
 	}
 }
