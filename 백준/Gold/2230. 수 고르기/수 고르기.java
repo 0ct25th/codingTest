@@ -3,44 +3,35 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M, result;
-	static int[] A;
+	static int N, M;
+	static long A[], result;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken()); // 수열 A의 길이
-		M = Integer.parseInt(st.nextToken()); // M 이상 차이
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		A = new int[N];
+		A = new long[N];
 		for (int i = 0; i < N; i++)
-			A[i] = Integer.parseInt(br.readLine());
+			A[i] = Long.parseLong(br.readLine());
 
-		///////////////////////////////////////////// end of Input
-
+		result = 2_000_000_000;
 		Arrays.sort(A);
-
-		result = Integer.MAX_VALUE;
 		twoPointer();
-
 		System.out.println(result);
 	}
 
 	static void twoPointer() {
-		int end = 0;
-
-		for (int start = 0; start < N; start++) {
-			while (end < N && A[end] - A[start] < M)
-				end++;
-
-			if (end == N)
-				break;
-
-			result = Math.min(result, A[end] - A[start]);
+		int left = 0;
+		
+		for(int right = 0; right < N; right++) {
+			while(left <= right && A[right] - A[left] >= M) {
+				result = Math.min(result, A[right] - A[left]);
+				left++;
+			}
 		}
-
 	}
-
 }
