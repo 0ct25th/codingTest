@@ -3,46 +3,39 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M, result;
-	static int[] A;
+	static int N, M, A[];
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken()); // 수열 개수
-		M = Integer.parseInt(st.nextToken()); // 합계
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(br.readLine());
 		A = new int[N];
+		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
 			A[i] = Integer.parseInt(st.nextToken());
 
-		result = 0;
-		twoPointer();
-
-		System.out.println(result);
+		System.out.println(twoPointer());
 	}
 
-	static void twoPointer() {
+	static int twoPointer() {
+		int cnt = 0;
 
 		for (int start = 0; start < N; start++) {
 			int end = start;
 			int sum = 0;
 
-			while (end < N) {
+			while (end < N && sum < M) {
 				sum += A[end];
-
-				if (sum == M) {
-					result++;
-					break;
-				} else if (sum > M)
-					break;
-
 				end++;
+
+				if (sum == M)
+					cnt++;
 			}
 		}
+		return cnt;
 	}
-
 }
