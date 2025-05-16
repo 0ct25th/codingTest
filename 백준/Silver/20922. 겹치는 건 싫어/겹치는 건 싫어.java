@@ -3,7 +3,8 @@ import java.util.*;
 
 public class Main {
 
-	static int N, K, arr[], result;
+	static int N, K, result;
+	static int[] a;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,10 +14,10 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		K = Integer.parseInt(st.nextToken());
 
+		a = new int[N];
 		st = new StringTokenizer(br.readLine());
-		arr = new int[N + 1];
 		for (int i = 0; i < N; i++)
-			arr[i] = Integer.parseInt(st.nextToken());
+			a[i] = Integer.parseInt(st.nextToken());
 
 		twoPointer();
 
@@ -25,19 +26,16 @@ public class Main {
 
 	static void twoPointer() {
 		int end = 0;
-		int[] isSelected = new int[100001];
+		int[] isSelected = new int[100_001];
 
 		for (int start = 0; start < N; start++) {
-			while (end < N && isSelected[arr[end]] < K) {
-				isSelected[arr[end]]++;
+			while (end < N && isSelected[a[end]] < K) {
+				isSelected[a[end]]++;
 				end++;
 			}
 
-			// 최대값 갱신
 			result = Math.max(result, end - start);
-
-			// start 제거
-			isSelected[arr[start]]--;
+			isSelected[a[start]]--;
 		}
 	}
 }
