@@ -3,8 +3,7 @@ import java.util.*;
 
 public class Main {
 
-	static int N, max;
-	static int[] A, LIS;
+	static int N, A[];
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,31 +11,29 @@ public class Main {
 
 		N = Integer.parseInt(br.readLine());
 
-		st = new StringTokenizer(br.readLine());
 		A = new int[N];
+		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
 			A[i] = Integer.parseInt(st.nextToken());
 
-		////////////////////// end of Input
-
-		LIS = new int[N];
-		dp();
-
-		System.out.println(max);
-
+		System.out.println(LIS());
 	}
 
-	static void dp() {
-		LIS[0] = 0;
+	static int LIS() {
+		int[] dp = new int[N];
+		int result = 0;
 
 		for (int i = 0; i < N; i++) {
-			LIS[i] = 1;
+			dp[i] = 1;
+
 			for (int j = 0; j < i; j++) {
-				if (A[j] < A[i] && LIS[i] < LIS[j] + 1)
-					LIS[i] = LIS[j] + 1;
+				if (A[j] < A[i])
+					dp[i] = Math.max(dp[i], dp[j] + 1);
 			}
 
-			max = Math.max(max, LIS[i]);
+			result = Math.max(result, dp[i]);
 		}
+
+		return result;
 	}
 }
