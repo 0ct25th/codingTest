@@ -20,20 +20,29 @@ public class Main {
 	}
 
 	static int LIS() {
-		int result = 0;
-		int[] dp = new int[N];
+		List<Integer> lis = new ArrayList<>();
+		lis.add(A[0]);
 
-		for (int i = 0; i < N; i++) {
-			dp[i] = 1;
+		for (int i = 1; i < N; i++) {
+			if (A[i] < lis.get(lis.size() - 1))
+				lis.add(A[i]);
+			else {
+				int start = 0;
+				int end = lis.size() - 1;
 
-			for (int j = 0; j < i; j++) {
-				if (A[j] > A[i])
-					dp[i] = Math.max(dp[i], dp[j] + 1);
+				while (start < end) {
+					int mid = (start + end) / 2;
+					
+					if(lis.get(mid) > A[i])
+						start = mid + 1;
+					else
+						end = mid;
+				}
+
+				lis.set(end, A[i]);
 			}
-
-			result = Math.max(result, dp[i]);
 		}
 
-		return result;
+		return lis.size();
 	}
 }
