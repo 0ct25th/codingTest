@@ -4,66 +4,66 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static int[] A, idxArr;
-	static List<Integer> LIS;
-	static Stack<Integer> stk;
+	static long A[];
 
-	public static void main(String[] arts) throws IOException {
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		N = Integer.parseInt(br.readLine());
+		A = new long[N];
 
-		A = new int[N]; // 입력된 수열을 저장
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
-			A[i] = Integer.parseInt(st.nextToken());
+			A[i] = Long.parseLong(st.nextToken());
 
-		/////////////////////// end of Input
+		LIS();
+	}
 
-		idxArr = new int[N]; // 입력된 각 수열의 위치를 저장
-		Arrays.fill(idxArr, -1); // idxArr 초기화
-		LIS = new ArrayList<>(); // 이분탐색을 통해 증가하는 수열을 저장할 객체
+	static void LIS() {
+		StringBuilder sb = new StringBuilder();
+		List<Long> lis = new ArrayList<>();
+		int[] order = new int[N];
+		Stack<Long> stk = new Stack<>();
 
-		for (int i = 0; i < N; i++) {
-			int key = A[i];
+		lis.add(A[0]);
+		for (int i = 1; i < N; i++) {
+			long key = A[i];
 
-			if (LIS.isEmpty() || LIS.get(LIS.size() - 1) < key) {
-				LIS.add(key);
-				idxArr[i] = LIS.size(); // 현재 LIS의 길이
+			if (lis.get(lis.size() - 1) < key) {
+				lis.add(key);
+				order[i] = lis.size() - 1;
 			} else {
 				int start = 0;
-				int end = LIS.size() - 1;
+				int end = lis.size() - 1;
 
 				while (start < end) {
 					int mid = (start + end) / 2;
 
-					if (LIS.get(mid) < key)
+					if (lis.get(mid) < key)
 						start = mid + 1;
 					else
 						end = mid;
 				}
 
-				LIS.set(end, key);
-				idxArr[i] = end + 1; // end + 1로 수정
+				lis.set(end, key);
+				order[i] = end;
 			}
 		}
 
-		stk = new Stack<>();
-		int idx = LIS.size(); // 현재 찾길 원하는 증가수열의 인덱스 값
-
+		int idx = lis.size() - 1;
 		for (int i = N - 1; i > -1; i--) {
-			if (idxArr[i] == idx) {
-				stk.push(A[i]); // stack에 경로를 추가
-				idx--; // 다음 인덱스 값
-			}
+			if (idx != order[i])
+				continue;
+
+			stk.push(A[i]);
+			idx--;
 		}
 
-		// 첫째 줄에 수열 A의 가장 긴 증가하는 부분 수열의 길이를 출력한다.
-		System.out.println(LIS.size());
-
-		// 둘째 줄에는 정답이 될 수 있는 가장 긴 증가하는 부분 수열을 출력한다.
+		sb.append(lis.size()).append("\n");
 		while (!stk.isEmpty())
-			System.out.print(stk.pop() + " ");
+			sb.append(stk.pop()).append(" ");
+
+		System.out.println(sb);
 	}
 }
