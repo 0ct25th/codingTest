@@ -3,9 +3,8 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M, result;
+	static int N, M;
 	static int[][] map;
-	static boolean[][] isVisited;
 	static int[] dr = { -1, 1, 0, 0 };
 	static int[] dc = { 0, 0, -1, 1 };
 
@@ -13,85 +12,82 @@ public class Main {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
-		// 첫째 줄에 미로의 크기를 나타내는 가로 크기 M, 세로 크기 N (1 ≤ N, M ≤ 100)이 주어진다.
 		st = new StringTokenizer(br.readLine());
-		M = Integer.parseInt(st.nextToken());
-		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken()); // 가로 크기
+		N = Integer.parseInt(st.nextToken()); // 세로 크기
 
-		// 다음 N개의 줄에는 미로의 상태를 나타내는 숫자 0과 1이 주어진다.
-		// 0은 빈 방을 의미하고, 1은 벽을 의미한다.
-		map = new int[N + 1][M + 1];
-		for (int r = 1; r <= N; r++) {
+		map = new int[N][M];
+		for (int r = 0; r < N; r++) {
 			String str = br.readLine();
 			for (int c = 0; c < M; c++)
-				map[r][c + 1] = str.charAt(c) - '0';
+				map[r][c] = str.charAt(c) - '0';
 		}
-		/////////// end of Input
 
-		System.out.println(dijkstra(1, 1));
+		System.out.println(dijkstra(0, 0));
 	}
 
 	static int dijkstra(int sr, int sc) {
-		Queue<Coord> pq = new PriorityQueue<>();
-		isVisited = new boolean[N + 1][M + 1];
+		Queue<Coord> pq = new PriorityQueue<>((o1, o2) -> Integer.compare(o1.w, o2.w));
+		int[][] minDist = new int[N][M];
+		for (int r = 0; r < N; r++)
+			Arrays.fill(minDist[r], Integer.MAX_VALUE);
+		boolean[][] isVisited = new boolean[N][M];
 
-		// 시작점
-		isVisited[sr][sc] = true;
-		pq.offer(new Coord(sr, sc, 0));
+		minDist[sr][sc] = 0;
+		pq.offer(new Coord(sr, sc, minDist[sr][sc]));
 
 		while (!pq.isEmpty()) {
 			Coord cur = pq.poll();
 			int r = cur.r;
 			int c = cur.c;
-			int cnt = cur.cnt;
+			int w = cur.w;
 
-			// 도착한 경우
-			if (r == N && c == M)
-				return cnt;
+			if (w > minDist[r][c])
+				continue;
 
-			// 4방향 탐색
+			if (isVisited[r][c])
+				continue;
+			isVisited[r][c] = true;
+
 			for (int d = 0; d < 4; d++) {
 				int nr = r + dr[d];
 				int nc = c + dc[d];
 
-				// 유효범위 밖 || 이미 방문
-				if (!isValidCoord(nr, nc) || isVisited[nr][nc])
+				if (!isValidCoord(nr, nc))
 					continue;
 
-				// 빈 방인 경우
-				if (map[nr][nc] == 0) {
-					isVisited[nr][nc] = true;
-					pq.offer(new Coord(nr, nc, cnt));
+				// 벽인 경우
+				if (map[nr][nc] == 1) {
+					if (minDist[nr][nc] <= minDist[r][c] + 1)
+						continue;
+
+					minDist[nr][nc] = minDist[r][c] + 1;
+					pq.offer(new Coord(nr, nc, minDist[nr][nc]));
 				}
 
-				// 벽인 경우
-				else if (map[nr][nc] == 1) {
-					isVisited[nr][nc] = true;
-					pq.offer(new Coord(nr, nc, cnt + 1));
+				// 빈 방인 경우
+				else {
+					minDist[nr][nc] = Math.min(minDist[nr][nc], minDist[r][c]);
+					pq.offer(new Coord(nr, nc, minDist[r][c]));
 				}
 			}
 		}
 
-		return 0;
+		return minDist[N - 1][M - 1];
 	}
 
 	static boolean isValidCoord(int r, int c) {
-		return 0 < r && r <= N && 0 < c && c <= M;
+		return -1 < r && r < N && -1 < c && c < M;
 	}
 
-	static class Coord implements Comparable<Coord> {
-		int r, c;
-		int cnt; // 벽 부순 횟수
+	static class Coord {
+		int r, c; // 좌표
+		int w; // 부순 벽 개수
 
-		Coord(int r, int c, int cnt) {
+		Coord(int r, int c, int w) {
 			this.r = r;
 			this.c = c;
-			this.cnt = cnt;
-		}
-
-		@Override
-		public int compareTo(Coord o) {
-			return Integer.compare(this.cnt, o.cnt);
+			this.w = w;
 		}
 	}
 }
