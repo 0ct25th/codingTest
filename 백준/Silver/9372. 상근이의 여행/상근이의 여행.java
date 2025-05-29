@@ -2,33 +2,75 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	
-	static int N, M, result;
-	static boolean[] isVisited;
+
+	static int N, M;
+	static List<Edge> edgeList;
+	static int[] p;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
-		
+		StringBuilder sb = new StringBuilder();
+
 		int T = Integer.parseInt(br.readLine());
-		for(int t = 0; t < T; t++) {
-			result = 0;
-			
-			// 첫 번째 줄에는 국가의 수 N(2 ≤ N ≤ 1 000)과 비행기의 종류 M(1 ≤ M ≤ 10 000) 가 주어진다.
+		for (int t = 0; t < T; t++) {
 			st = new StringTokenizer(br.readLine());
-			N = Integer.parseInt(st.nextToken()); // 정점 수
-			M = Integer.parseInt(st.nextToken()); // 간선 수
-			
-			isVisited = new boolean[N + 1];
-			// M개의 줄에 a와 b 쌍들이 입력
-			for(int i = 0; i < M; i++) {
-				// a와 b를 왕복하는 비행기가 있다는 것을 의미
+			N = Integer.parseInt(st.nextToken()); // 국가의 수
+			M = Integer.parseInt(st.nextToken()); // 비행기의 종류
+
+			edgeList = new ArrayList<>();
+			for (int i = 0; i < M; i++) {
 				st = new StringTokenizer(br.readLine());
 				int a = Integer.parseInt(st.nextToken());
 				int b = Integer.parseInt(st.nextToken());
+
+				edgeList.add(new Edge(a, b));
 			}
-			
-			System.out.println(N - 1);
+
+			init();
+			int result = 0;
+			for (Edge e : edgeList) {
+				if (union(e.a, e.b))
+					result++;
+			}
+
+			sb.append(result).append("\n");
 		} // end of TestCase
+
+		System.out.println(sb);
+	}
+
+	static boolean union(int a, int b) {
+		int aRoot = find(a);
+		int bRoot = find(b);
+
+		if (aRoot == bRoot)
+			return false;
+
+		p[bRoot] = aRoot;
+		return true;
+	}
+
+	static int find(int x) {
+		if (x == p[x])
+			return p[x];
+
+		return p[x] = find(p[x]);
+	}
+
+	static void init() {
+		p = new int[N + 1];
+
+		for (int i = 1; i <= N; i++)
+			p[i] = i;
+	}
+
+	static class Edge {
+		int a, b; // 국가
+
+		Edge(int a, int b) {
+			this.a = a;
+			this.b = b;
+		}
 	}
 }
