@@ -3,28 +3,23 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M, K, result;
-	static boolean[] isPower;
-	static int[] p;
+	static int N, M, K;
 	static List<Edge> edgeList;
+	static int[] p;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken()); // 도시 수
-		M = Integer.parseInt(st.nextToken()); // 케이블 수
-		K = Integer.parseInt(st.nextToken()); // 발전소 수
+		N = Integer.parseInt(st.nextToken()); // 도시의 개수
+		M = Integer.parseInt(st.nextToken()); // 설치 가능 케이블의 개수
+		K = Integer.parseInt(st.nextToken()); // 발전소의 개수
 
-		// 전처리
-		make();
-
-		// 발전소 위치 입력
+		init();
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < K; i++) {
+		for (int i = 0; i < K; i++)
 			p[Integer.parseInt(st.nextToken())] = -1;
-		}
 
 		edgeList = new ArrayList<>();
 		for (int i = 0; i < M; i++) {
@@ -36,52 +31,21 @@ public class Main {
 			edgeList.add(new Edge(u, v, w));
 		}
 
-		kruskal();
+		Collections.sort(edgeList, (o1, o2) -> (o1.w - o2.w));
+		int result = 0; // 최소 비용
+		for (Edge e : edgeList) {
+			if (!union(e.u, e.v))
+				continue;
+
+			result += e.w;
+			if (isAllConnected())
+				break;
+		}
 
 		System.out.println(result);
 	}
 
-	static void kruskal() {
-		Collections.sort(edgeList);
-
-		for (Edge e : edgeList) {
-			if (union(e.from, e.to))
-				continue;
-
-			result += e.weight;
-
-			// 모든 도시 발전소 연결된 경우
-			if (isAllConnect())
-				return;
-		}
-	}
-
-	static boolean union(int a, int b) {
-		int aRoot = find(a);
-		int bRoot = find(b);
-
-		if (aRoot == bRoot)
-			return true;
-		else if (aRoot == -1)
-			p[bRoot] = -1;
-		else if (bRoot == -1)
-			p[aRoot] = -1;
-		else
-			p[bRoot] = aRoot;
-
-		return false;
-	}
-
-	static int find(int x) {
-		if (p[x] == -1)
-			return -1;
-		else if (x == p[x])
-			return x;
-
-		return p[x] = find(p[x]);
-	}
-
-	static boolean isAllConnect() {
+	static boolean isAllConnected() {
 		for (int i = 1; i <= N; i++)
 			if (p[i] != -1)
 				return false;
@@ -89,26 +53,46 @@ public class Main {
 		return true;
 	}
 
-	static void make() {
+	static boolean union(int a, int b) {
+		int aRoot = find(a);
+		int bRoot = find(b);
+
+		if (aRoot == bRoot)
+			return false;
+		else if (aRoot == -1)
+			p[bRoot] = -1;
+		else if (bRoot == -1)
+			p[aRoot] = -1;
+		else
+			p[bRoot] = aRoot;
+
+		return true;
+	}
+
+	static int find(int x) {
+		if (p[x] == -1)
+			return -1;
+		if (x == p[x])
+			return p[x];
+
+		return p[x] = find(p[x]);
+	}
+
+	static void init() {
 		p = new int[N + 1];
 
 		for (int i = 1; i <= N; i++)
 			p[i] = i;
 	}
 
-	static class Edge implements Comparable<Edge> {
-		int from, to;
-		int weight; // 비용
+	static class Edge {
+		int u, v; // 도시 번호
+		int w; // 비용
 
-		Edge(int from, int to, int weight) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Integer.compare(this.weight, o.weight);
+		Edge(int u, int v, int w) {
+			this.u = u;
+			this.v = v;
+			this.w = w;
 		}
 	}
 }
