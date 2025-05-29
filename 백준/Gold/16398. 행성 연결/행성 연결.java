@@ -3,9 +3,9 @@ import java.util.*;
 
 public class Main {
 
-	static int N, p[];
-	static long result;
-	static List<Edge> list;
+	static int N;
+	static List<Edge> edgeList;
+	static int[] p;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,38 +13,35 @@ public class Main {
 
 		N = Integer.parseInt(br.readLine());
 
-		list = new ArrayList<>();
-		for (int i = 0; i < N; i++) {
+		edgeList = new ArrayList<>();
+		for (int r = 1; r <= N; r++) {
 			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < N; j++) {
-				int c = Integer.parseInt(st.nextToken());
+			for (int c = 1; c <= N; c++) {
+				int w = Integer.parseInt(st.nextToken());
 
-				list.add(new Edge(i, j, c));
+				if (r <= c)
+					continue;
+
+				edgeList.add(new Edge(r, c, w));
 			}
 		}
-		////////// end of Input
 
-		// 유지비용 오름차순 정렬
-		Collections.sort(list);
+		Collections.sort(edgeList, (o1, o2) -> (o1.w - o2.w));
+		init();
 
-		kruskal();
+		long result = 0;
+		int cnt = 0;
+		for (Edge e : edgeList) {
+			if (cnt == N)
+				break;
+
+			if (union(e.a, e.b)) {
+				cnt++; // 연결된 행성 수
+				result += e.w; // 관리 비용
+			}
+		}
 
 		System.out.println(result);
-	}
-
-	static void kruskal() {
-		// 전처리
-		make();
-
-		int cnt = 1;
-		for (Edge now : list) {
-			if (!union(now.from, now.to))
-				continue;
-
-			result += now.w;
-			if (++cnt == N)
-				break;
-		}
 	}
 
 	static boolean union(int a, int b) {
@@ -59,32 +56,27 @@ public class Main {
 	}
 
 	static int find(int x) {
-		if (p[x] == x)
-			return x;
+		if (x == p[x])
+			return p[x];
 
 		return p[x] = find(p[x]);
 	}
 
-	static void make() {
+	static void init() {
 		p = new int[N + 1];
 
 		for (int i = 1; i <= N; i++)
 			p[i] = i;
 	}
 
-	static class Edge implements Comparable<Edge> {
-		int from, to;
-		int w;
+	static class Edge {
+		int a, b; // 행성
+		int w; // 비용
 
-		Edge(int from, int to, int w) {
-			this.from = from;
-			this.to = to;
+		Edge(int a, int b, int w) {
+			this.a = a;
+			this.b = b;
 			this.w = w;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Integer.compare(this.w, o.w);
 		}
 	}
 }
