@@ -15,8 +15,8 @@ public class Main {
 		meetings = new PriorityQueue<>();
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
-			long start = Long.parseLong(st.nextToken());
-			long end = Long.parseLong(st.nextToken());
+			int start = Integer.parseInt(st.nextToken());
+			int end = Integer.parseInt(st.nextToken());
 
 			meetings.offer(new Meeting(start, end));
 		}
@@ -42,9 +42,9 @@ public class Main {
 	}
 
 	static class Meeting implements Comparable<Meeting> {
-		long start, end;
+		int start, end;
 
-		Meeting(long start, long end) {
+		Meeting(int start, int end) {
 			this.start = start;
 			this.end = end;
 		}
@@ -52,9 +52,9 @@ public class Main {
 		@Override
 		public int compareTo(Meeting o) {
 			if (this.end == o.end)
-				return Long.compare(this.start, o.start);
+				return Integer.compare(this.start, o.start);
 
-			return Long.compare(this.end, o.end);
+			return Integer.compare(this.end, o.end);
 		}
 	}
 }
