@@ -31,7 +31,7 @@ public class Main {
 		while (!meetings.isEmpty()) {
 			Meeting nxt = meetings.poll();
 
-			if (nxt.end > cur.start)
+			if (cur.end > nxt.start)
 				continue;
 
 			cur = nxt;
@@ -51,10 +51,10 @@ public class Main {
 
 		@Override
 		public int compareTo(Meeting o) {
-			if (this.start == o.start)
-				return Long.compare(o.end, this.end);
+			if (this.end == o.end)
+				return Long.compare(this.start, o.start);
 
-			return Long.compare(o.start, this.start);
+			return Long.compare(this.end, o.end);
 		}
 	}
 }
