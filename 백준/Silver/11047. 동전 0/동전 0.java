@@ -3,28 +3,29 @@ import java.util.*;
 
 public class Main {
 
-	static int N, K, coin[];
+	static int N, K, result;
+	static int[] A;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
+		StringTokenizer st;
 
+		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		K = Integer.parseInt(st.nextToken());
 
-		coin = new int[N];
-		for (int i = 0; i < N; i++)
-			coin[i] = Integer.parseInt(br.readLine());
+		A = new int[N];
+		for (int i = N - 1; i > -1; i--)
+			A[i] = Integer.parseInt(br.readLine());
 
-		int cnt = 0;
-		for (int i = N - 1; i >= 0; i--) {
-			if (coin[i] > K)
-				continue;
+		for (int i = 0; i < N; i++) {
+			if (K == 0)
+				break;
 
-			cnt += (K / coin[i]);
-			K %= coin[i];
-
+			result += K / A[i];
+			K %= A[i];
 		}
-		System.out.println(cnt);
+		System.out.println(result);
 	}
+
 }
