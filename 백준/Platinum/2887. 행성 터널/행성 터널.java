@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
 
 	static int N, result;
-	static List<Coord> coordList;
+	static List<Planet> coordList;
 	static List<Edge> edgeList;
 	static int[] p;
 
@@ -16,50 +16,41 @@ public class Main {
 
 		coordList = new ArrayList<>();
 		// N개 줄에는 각 행성의 x, y, z좌표가 주어진다.
-		for (int i = 0; i < N; i++) {
+		for (int i = 1; i <= N; i++) {
 			st = new StringTokenizer(br.readLine());
 
 			int x = Integer.parseInt(st.nextToken());
 			int y = Integer.parseInt(st.nextToken());
 			int z = Integer.parseInt(st.nextToken());
 
-			// 좌표 저장
-			coordList.add(new Coord(i, x, y, z));
+			coordList.add(new Planet(i, x, y, z));
 		}
-		/////////////////////////// end of Input
 
-		// x, y, z 각각에 대해서 정렬하고 각 행성의 번호와 비용을 edgeList에 추가
 		edgeList = new ArrayList<>();
 		sort(0); // x축 기준으로 정렬
 		sort(1); // y축 기준으로 정렬
 		sort(2); // z축 기준으로 정렬
 
-		kruskal();
-
-		System.out.println(result);
+		System.out.println(kruskal());
 
 	}
 
-	static void kruskal() {
-		// 간선 비용 오름차순 정렬
-		Collections.sort(edgeList);
-
-		// 전처리
-		make();
-
+	static long kruskal() {
+		long result = 0;
 		int cnt = 0;
+		Collections.sort(edgeList, (o1, o2) -> (o1.d - o2.d));
+		init();
+
 		for (Edge edge : edgeList) {
-			// 같은 트리인 경우
-			if (union(edge.from, edge.to))
-				continue; // 넘기기
+			if (!union(edge.a, edge.b))
+				continue;
+			result += edge.d;
 
-			// 최소 비용 더하기
-			result += edge.weight;
-
-			// 모든 행성을 터널로 연결 완료
 			if (++cnt == N)
 				break;
 		}
+
+		return result;
 	}
 
 	static boolean union(int a, int b) {
@@ -67,10 +58,10 @@ public class Main {
 		int bRoot = find(b);
 
 		if (aRoot == bRoot)
-			return true;
+			return false;
 
-		p[aRoot] = bRoot;
-		return false;
+		p[bRoot] = aRoot;
+		return true;
 	}
 
 	static int find(int x) {
@@ -80,15 +71,14 @@ public class Main {
 		return p[x] = find(p[x]);
 	}
 
-	static void make() {
-		p = new int[N];
+	static void init() {
+		p = new int[N + 1];
 
-		for (int i = 0; i < N; i++)
+		for (int i = 1; i <= N; i++)
 			p[i] = i;
 	}
 
-	static void sort(int axis) {
-		// 축에 따라 정렬
+	static void sort(int axis) { // 축에 따라 정렬
 		Collections.sort(coordList, (a, b) -> {
 			if (axis == 0)
 				return Integer.compare(a.x, b.x);
@@ -98,41 +88,37 @@ public class Main {
 				return Integer.compare(a.z, b.z);
 		});
 
-		// 인접한 행성들 간의 간선 추가
 		for (int i = 0; i < N - 1; i++) {
-			int weight;
+			int dist;
+
 			if (axis == 0)
-				weight = Math.abs(coordList.get(i).x - coordList.get(i + 1).x);
+				dist = Math.abs(coordList.get(i).x - coordList.get(i + 1).x);
 			else if (axis == 1)
-				weight = Math.abs(coordList.get(i).y - coordList.get(i + 1).y);
+				dist = Math.abs(coordList.get(i).y - coordList.get(i + 1).y);
 			else
-				weight = Math.abs(coordList.get(i).z - coordList.get(i + 1).z);
+				dist = Math.abs(coordList.get(i).z - coordList.get(i + 1).z);
 
-			edgeList.add(new Edge(coordList.get(i).num, coordList.get(i + 1).num, weight));
+			edgeList.add(new Edge(coordList.get(i).n, coordList.get(i + 1).n, dist));
 		}
 	}
 
-	static class Edge implements Comparable<Edge> {
-		int from, to, weight;
+	static class Edge {
+		int a, b; // 행성들 번호
+		int d; // 거리
 
-		Edge(int from, int to, int weight) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Integer.compare(this.weight, o.weight);
+		Edge(int a, int b, int d) {
+			this.a = a;
+			this.b = b;
+			this.d = d;
 		}
 	}
 
-	static class Coord {
-		int num; // 좌표 번호
+	static class Planet {
+		int n; // 행성 번호
 		int x, y, z;
 
-		Coord(int num, int x, int y, int z) {
-			this.num = num;
+		Planet(int n, int x, int y, int z) {
+			this.n = n;
 			this.x = x;
 			this.y = y;
 			this.z = z;
