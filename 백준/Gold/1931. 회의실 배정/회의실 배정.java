@@ -3,57 +3,58 @@ import java.util.*;
 
 public class Main {
 
-	static int N, result;
-	static List<Meeting> meetings, picks;
+	static int N;
+	static Queue<Meeting> meetings;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
+		StringTokenizer st;
 
-		N = Integer.parseInt(st.nextToken());
-		meetings = new ArrayList<>();
+		N = Integer.parseInt(br.readLine());
+
+		meetings = new PriorityQueue<>();
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
-			int start = Integer.parseInt(st.nextToken());
-			int end = Integer.parseInt(st.nextToken());
+			long start = Long.parseLong(st.nextToken());
+			long end = Long.parseLong(st.nextToken());
 
-			meetings.add(new Meeting(start, end));
+			meetings.offer(new Meeting(start, end));
 		}
 
-		Collections.sort(meetings);
-
-		result = 0;
-		picks = new ArrayList<>();
-		set();
-
-		System.out.println(picks.size());
+		System.out.println(greedy());
 	}
 
-	static void set() {
-		// greedy하게 첫 번째 회의 무조건 저장
-		picks.add(meetings.get(0));
+	static int greedy() {
+		int result = 1;
+		Meeting cur = meetings.poll();
 
-		// 마지막 회의 종료 시간보다 늦거나 같아야 저장
-		for (int i = 1; i < N; i++) {
-			Meeting last = picks.get(picks.size() - 1);
+		while (!meetings.isEmpty()) {
+			Meeting nxt = meetings.poll();
 
-			if (last.end <= meetings.get(i).start)
-				picks.add(meetings.get(i));
+			if (nxt.end > cur.start)
+				continue;
+
+			cur = nxt;
+			result++;
 		}
+
+		return result;
 	}
 
 	static class Meeting implements Comparable<Meeting> {
-		int start;
-		int end;
+		long start, end;
 
-		Meeting(int start, int end) {
+		Meeting(long start, long end) {
 			this.start = start;
 			this.end = end;
 		}
 
 		@Override
 		public int compareTo(Meeting o) {
-			return this.end == o.end ? (this.start - o.start) : (this.end - o.end);
+			if (this.start == o.start)
+				return Long.compare(o.end, this.end);
+
+			return Long.compare(o.start, this.start);
 		}
 	}
 }
