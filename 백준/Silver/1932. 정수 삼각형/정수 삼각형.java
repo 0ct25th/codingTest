@@ -3,40 +3,38 @@ import java.util.*;
 
 public class Main {
 
-	static int[][] arr;
-	static Integer[][] dp;
-	static int N;
+	static int n;
+	static int[][] map, dp;
 
 	public static void main(String[] args) throws IOException {
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		N = Integer.parseInt(br.readLine());
-
-		arr = new int[N][N];
-		dp = new Integer[N][N];
 		StringTokenizer st;
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine(), " ");
 
-			for (int j = 0; j < i + 1; j++)
-				arr[i][j] = Integer.parseInt(st.nextToken());
+		n = Integer.parseInt(br.readLine());
+		
+		map = new int[n][n];
+		for (int r = 0; r < n; r++) {
+			st = new StringTokenizer(br.readLine());
+			for (int c = 0; c < n; c++) {
+				if (r < c)
+					break;
+
+				map[r][c] = Integer.parseInt(st.nextToken());
+			}
 		}
 
-		for (int i = 0; i < N; i++)
-			dp[N - 1][i] = arr[N - 1][i];
+		dp = new int[n][n];
+		for (int c = 0; c < n; c++)
+			dp[n - 1][c] = map[n - 1][c];
 
-		System.out.println(find(0, 0));
+		if(n > 1) {
+			for (int r = n - 2; r > 0; r--) {
+				for (int c = 0; c <= r; c++) 
+					dp[r][c] = Math.max(dp[r + 1][c], dp[r + 1][c + 1]) + map[r][c];
+			}
 
-	}
-
-	static int find(int depth, int idx) {
-		if (depth == N - 1)
-			return dp[depth][idx];
-
-		if (dp[depth][idx] == null)
-			dp[depth][idx] = Math.max(find(depth + 1, idx), find(depth + 1, idx + 1)) + arr[depth][idx];
-
-		return dp[depth][idx];
+			dp[0][0] = Math.max(dp[1][0], dp[1][1]) + map[0][0];
+		}
+		System.out.println(dp[0][0]);
 	}
 }
