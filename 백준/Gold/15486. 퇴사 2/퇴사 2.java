@@ -3,35 +3,34 @@ import java.util.*;
 
 public class Main {
 
-	static int N, T[], P[], dp[];
+	static int N;
+	static int[] T, P;
+	static long[] dp;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		N = Integer.parseInt(br.readLine());
+		T = new int[1_500_051];
+		P = new int[1_500_051];
+		dp = new long[1_500_051];
 
-		T = new int[N + 1];
-		P = new int[N + 1];
 		for (int i = 1; i <= N; i++) {
 			st = new StringTokenizer(br.readLine());
-
 			T[i] = Integer.parseInt(st.nextToken());
 			P[i] = Integer.parseInt(st.nextToken());
 		}
-		////////////// end of Input
 
-		dp = new int[N + 2];
-		for (int i = 1; i <= N; i++) {
-			// 상담을 하지 않은 경우
+		for (int i = 1; i <= 1_500_001; i++) {
+			int day = i + T[i];
+			if (day > 1_500_051)
+				continue;
+
 			dp[i] = Math.max(dp[i], dp[i - 1]);
-
-			// 상담을 진행한 경우
-			int nextDay = i + T[i] - 1;
-			if (nextDay <= N)
-				dp[nextDay] = Math.max(dp[nextDay], dp[i - 1] + P[i]);
+			dp[day] = Math.max(dp[day], dp[i] + P[i]);
 		}
 
-		System.out.println(dp[N]);
+		System.out.println(dp[N + 1]);
 	}
 }
