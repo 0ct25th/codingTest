@@ -3,30 +3,26 @@ import java.util.*;
 
 public class Main {
 
-	static StringBuilder sb;
-
 	static int N, M;
-	static int[] numbers, picks;
+	static int[] num, order;
+	static StringBuilder sb = new StringBuilder();
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-		StringTokenizer st;
-		sb = new StringBuilder();
-
-		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
+		num = new int[N];
 		st = new StringTokenizer(br.readLine());
-		numbers = new int[N];
 		for (int i = 0; i < N; i++)
-			numbers[i] = Integer.parseInt(st.nextToken());
+			num[i] = Integer.parseInt(st.nextToken());
 
-		Arrays.sort(numbers);
-		picks = new int[M];
-		combination(0, 0);
+		Arrays.sort(num);
+		order = new int[M];
+		recursion(0, 0);
 
 		bw.write(sb.toString());
 		bw.flush();
@@ -35,20 +31,18 @@ public class Main {
 		bw.close();
 	}
 
-	static void combination(int depth, int start) {
-		// 기저 조건: M개를 다 고른 경우
+	static void recursion(int depth, int start) {
 		if (depth == M) {
-			for (int pick : picks)
-				sb.append(pick).append(" ");
+			for (int i = 0; i < M; i++)
+				sb.append(order[i]).append(" ");
 
 			sb.append("\n");
-
 			return;
 		}
 
 		for (int i = start; i < N; i++) {
-			picks[depth] = numbers[i];
-			combination(depth + 1, i + 1);
+			order[depth] = num[i];
+			recursion(depth + 1, i + 1);
 		}
 	}
 }
