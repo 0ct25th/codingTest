@@ -4,24 +4,19 @@ import java.util.*;
 public class Main {
 
 	static int N, M;
-	static int[] numbers, picks;
+	static int[] num;
 	static StringBuilder sb = new StringBuilder();
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st;
 
-		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		numbers = new int[N];
-		for(int i = 0; i < N; i++)
-			numbers[i] = i + 1;
-			
-		picks = new int[M];
-		permutation(0);
+		num = new int[M];
+		recursion(0);
 
 		bw.write(sb.toString());
 		bw.flush();
@@ -30,20 +25,18 @@ public class Main {
 		bw.close();
 	}
 
-	static void permutation(int depth) {
-		// 기저조건: M개를 모두 뽑은 경우
+	static void recursion(int depth) {
 		if (depth == M) {
-			for(int pick: picks)
-				sb.append(pick).append(" ");
-			
+			for (int i = 0; i < M; i++)
+				sb.append(num[i]).append(" ");
+
 			sb.append("\n");
-			
 			return;
 		}
-		
-		for(int i = 0; i < N; i++) {
-			picks[depth] = numbers[i];
-			permutation(depth + 1);
+
+		for(int i = 1; i <= N; i++) {
+			num[depth] = i;
+			recursion(depth + 1);
 		}
 	}
 }
