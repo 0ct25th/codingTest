@@ -4,60 +4,57 @@ import java.util.*;
 public class Main {
 
 	static int N, M, result;
-	static List<Integer>[] adjList;
 	static boolean[] isVisited;
+	static List<Integer>[] list;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
 		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken()); // 정점의 개수
+		M = Integer.parseInt(st.nextToken()); // 간선의 개수
 
-		adjList = new ArrayList[N + 1];
+		list = new ArrayList[N + 1];
 		for (int i = 1; i <= N; i++)
-			adjList[i] = new ArrayList<>();
+			list[i] = new ArrayList<>();
 
 		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
 
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-
-			// 양방향 그래프
-			adjList[u].add(v);
-			adjList[v].add(u);
+			list[a].add(b);
+			list[b].add(a);
 		}
 
 		isVisited = new boolean[N + 1];
 		for (int i = 1; i <= N; i++) {
-			// 방문 안한 경우 그래프 탐색
 			if (isVisited[i])
 				continue;
 
+			bfs(i);
 			result++;
-			search(i);
 		}
 
 		System.out.println(result);
 	}
 
-	static void search(int node) {
+	static void bfs(int start) {
 		Queue<Integer> dq = new ArrayDeque<>();
 
-		isVisited[node] = true;
-		dq.offer(node);
+		isVisited[start] = true;
+		dq.offer(start);
 
 		while (!dq.isEmpty()) {
 			int cur = dq.poll();
 
-			for (Integer next : adjList[cur]) {
-				if (isVisited[next])
+			for (int nxt : list[cur]) {
+				if (isVisited[nxt])
 					continue;
 
-				isVisited[next] = true;
-				dq.offer(next);
+				isVisited[nxt] = true;
+				dq.offer(nxt);
 			}
 		}
 	}
