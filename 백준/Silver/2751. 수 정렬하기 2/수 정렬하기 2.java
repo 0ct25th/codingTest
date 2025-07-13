@@ -4,23 +4,28 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static List<Integer> lst;
-
+	static int[] arr;
+	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringBuilder sb = new StringBuilder();
-
+		
 		N = Integer.parseInt(br.readLine());
-		lst = new ArrayList<>();
-
-		for (int i = 0; i < N; i++)
-			lst.add(Integer.parseInt(br.readLine()));
-
-		Collections.sort(lst);
-
-		for (int i : lst)
+		
+		arr = new int[N];
+		for(int i = 0; i < N; i++)
+			arr[i] = Integer.parseInt(br.readLine());
+		
+		Arrays.sort(arr);
+		
+		for(int i : arr)
 			sb.append(i).append("\n");
-
-		System.out.println(sb);
+		
+		bw.write(sb.toString());
+		bw.flush();
+		
+		br.close();
+		bw.close();
 	}
 }
