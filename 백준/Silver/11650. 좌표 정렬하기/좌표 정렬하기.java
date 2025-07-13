@@ -4,31 +4,34 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static Queue<Coord> pq;
+	static List<Coord> list;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] arg) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringBuilder sb = new StringBuilder();
 
 		N = Integer.parseInt(br.readLine());
 
-		pq = new PriorityQueue<>();
+		list = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
 			int x = Integer.parseInt(st.nextToken());
 			int y = Integer.parseInt(st.nextToken());
 
-			pq.offer(new Coord(x, y));
+			list.add(new Coord(x, y));
 		}
 
-		while (!pq.isEmpty()) {
-			Coord coord = pq.poll();
-
+		Collections.sort(list);
+		for (Coord coord : list)
 			sb.append(coord.x).append(" ").append(coord.y).append("\n");
-		}
 
-		System.out.println(sb);
+		bw.write(sb.toString());
+		bw.flush();
+
+		br.close();
+		bw.close();
 	}
 
 	static class Coord implements Comparable<Coord> {
@@ -41,7 +44,10 @@ public class Main {
 
 		@Override
 		public int compareTo(Coord o) {
-			return this.x == o.x ? (this.y - o.y) : (this.x - o.x);
+			if (this.x == o.x)
+				return Integer.compare(this.y, o.y);
+
+			return Integer.compare(this.x, o.x);
 		}
 	}
 }
