@@ -12,33 +12,36 @@ public class Main {
 
 		N = Integer.parseInt(br.readLine());
 
-		L = new int[N];
+		L = new int[N]; // 체력
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
 			L[i] = Integer.parseInt(st.nextToken());
 
-		J = new int[N];
+		J = new int[N]; // 기쁨		
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
 			J[i] = Integer.parseInt(st.nextToken());
 
-		dfs(0, 0, 100);
+		result = Integer.MIN_VALUE;
+		dfs(0, 100, 0);
 
 		System.out.println(result);
-
 	}
 
-	static void dfs(int depth, int sum, int stamina) {
-		// 기저 조건: 모든 사람을 고려한 경우
-		if (depth == N) {
-			result = Math.max(result, sum);
+	static void dfs(int depth, int hp, int joy) {
+		// 가지 치기: 현재 체력이 0이나 음수가 된 경우
+		if (hp <= 0) {
 			return;
 		}
 
-		// 체력이 되는 경우 인사
-		if (stamina - L[depth] > 0)
-			dfs(depth + 1, sum + J[depth], stamina - L[depth]);
+		// 기저 조건: 모든 사람에게 감사한 경우
+		if (depth == N) {
+			result = Math.max(result, joy);
 
-		dfs(depth + 1, sum, stamina);
+			return;
+		}
+
+		dfs(depth + 1, hp - L[depth], joy + J[depth]);
+		dfs(depth + 1, hp, joy);
 	}
 }
