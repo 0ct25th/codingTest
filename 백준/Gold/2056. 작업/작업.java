@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static int[] time, inDgree, endTime;
+	static int[] times, inDgree, result;
 	static List<Integer>[] adjList;
 
 	public static void main(String[] args) throws IOException {
@@ -13,7 +13,7 @@ public class Main {
 
 		N = Integer.parseInt(br.readLine());
 
-		time = new int[N + 1];
+		times = new int[N + 1]; // 걸리는 시간
 		inDgree = new int[N + 1];
 		adjList = new ArrayList[N + 1];
 		for (int i = 1; i <= N; i++)
@@ -21,53 +21,52 @@ public class Main {
 
 		for (int i = 1; i <= N; i++) {
 			st = new StringTokenizer(br.readLine());
-			time[i] = Integer.parseInt(st.nextToken());
+			times[i] = Integer.parseInt(st.nextToken());
 
-			int cnt = Integer.parseInt(st.nextToken());
+			int n = Integer.parseInt(st.nextToken());
+			for (int j = 0; j < n; j++) {
+				int jobs = Integer.parseInt(st.nextToken());
 
-			for (int j = 0; j < cnt; j++) {
-				int num = Integer.parseInt(st.nextToken());
-				adjList[num].add(i);
-				inDgree[i]++;
+				adjList[i].add(jobs);
+				inDgree[jobs]++;
 			}
-
 		}
 
+		result = new int[N + 1]; // 끝나는 시간
 		topologySort();
 
-		int answer = Integer.MIN_VALUE;
+		int answer = 0;
 		for (int i = 1; i <= N; i++)
-			answer = Math.max(answer, endTime[i]);
+			answer = Math.max(answer, result[i]);
 
 		System.out.println(answer);
 	}
 
 	static void topologySort() {
 		Queue<Integer> dq = new ArrayDeque<>();
-		endTime = new int[N + 1];
 
-		// 인접 차수 0
 		for (int i = 1; i <= N; i++) {
-			if (inDgree[i] == 0) {
-				dq.offer(i);
-				endTime[i] = time[i];
-			}
+			if (inDgree[i] != 0)
+				continue;
+
+			result[i] = times[i];
+			dq.offer(i);
 		}
 
 		while (!dq.isEmpty()) {
-			int cur = dq.poll();
+			int size = dq.size();
 
-			// 인접한 노드들 차수 감소
-			for (int i = 0; i < adjList[cur].size(); i++) {
-				int nxt = adjList[cur].get(i);
+			for (int i = 0; i < size; i++) {
+				int cur = dq.poll();
 
-				inDgree[nxt]--; // 차수 감소
-				endTime[nxt] = Math.max(endTime[nxt], endTime[cur] + time[nxt]);
+				for (int nxt : adjList[cur]) {
+					inDgree[nxt]--;
+					result[nxt] = Math.max(result[nxt], result[cur] + times[nxt]);
 
-				if (inDgree[nxt] == 0)
-					dq.offer(nxt); // 덱 삽입
+					if (inDgree[nxt] == 0)
+						dq.offer(nxt);
+				}
 			}
 		}
 	}
-
 }
