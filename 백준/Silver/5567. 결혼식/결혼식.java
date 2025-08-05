@@ -5,6 +5,7 @@ public class Main {
 
 	static int n, m;
 	static List<Integer>[] adjList;
+	static boolean[] friends;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,53 +17,49 @@ public class Main {
 		adjList = new ArrayList[n + 1];
 		for (int i = 1; i <= n; i++)
 			adjList[i] = new ArrayList<>();
-
+		friends = new boolean[n + 1];
 		for (int i = 0; i < m; i++) {
 			st = new StringTokenizer(br.readLine());
 			int a = Integer.parseInt(st.nextToken());
 			int b = Integer.parseInt(st.nextToken());
 
-			// 양방향 그래프
 			adjList[a].add(b);
 			adjList[b].add(a);
+
+			if (a == 1 || b == 1) {
+				friends[a] = true;
+				friends[b] = true;
+			}
 		}
 
 		System.out.println(bfs(1));
 	}
 
 	static int bfs(int start) {
-		Queue<Person> dq = new ArrayDeque<>();
-		int answer = 0;
+		Queue<Integer> dq = new ArrayDeque<>();
 		boolean[] isVisited = new boolean[n + 1];
+		int result = 0;
 
-		isVisited[1] = true;
-		dq.offer(new Person(1, 0));
+		isVisited[start] = true;
+		dq.offer(start);
 
 		while (!dq.isEmpty()) {
-			Person curPerson = dq.poll();
-			int num = curPerson.num;
-			int count = curPerson.count;
+			int cur = dq.poll();
 
-			for (int nextNode : adjList[num]) {
-				if (isVisited[nextNode] || count + 1 > 2)
+			if (!friends[cur])
+				continue;
+
+			for (int nxt : adjList[cur]) {
+				if (isVisited[nxt])
 					continue;
 
-				isVisited[nextNode] = true;
-				dq.offer(new Person(nextNode, count + 1));
-				answer++;
+				result++;
+				isVisited[nxt] = true;
+				dq.offer(nxt);
 			}
 		}
 
-		return answer;
+		return result;
 	}
 
-	static class Person {
-		int num;
-		int count;
-
-		Person(int num, int count) {
-			this.num = num;
-			this.count = count;
-		}
-	}
 }
