@@ -4,48 +4,48 @@ import java.util.*;
 public class Main {
 
 	static int N;
-	static Queue<Member> pq;
+	static List<Member> members;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
-		StringBuilder sb = new StringBuilder();
 
 		N = Integer.parseInt(br.readLine());
-		pq = new PriorityQueue<>();
 
+		members = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
 			int age = Integer.parseInt(st.nextToken());
 			String name = st.nextToken();
 
-			pq.offer(new Member(age, i, name));
+			members.add(new Member(i, age, name));
 		}
 
-		while (!pq.isEmpty()) {
-			Member member = pq.poll();
+		Collections.sort(members);
 
+		StringBuilder sb = new StringBuilder();
+		for (Member member : members)
 			sb.append(member.age).append(" ").append(member.name).append("\n");
-		}
 
 		System.out.println(sb);
 	}
 
 	static class Member implements Comparable<Member> {
-		int age;
-		int order;
+		int n, age;
 		String name;
 
-		Member(int age, int order, String name) {
+		Member(int n, int age, String name) {
+			this.n = n;
 			this.age = age;
-			this.order = order;
 			this.name = name;
 		}
 
 		@Override
 		public int compareTo(Member o) {
-			// 나이가 같으면 가입한 순
-			return this.age == o.age ? (this.order - o.order) : (this.age - o.age);
+			if (this.age == o.age)
+				return Integer.compare(this.n, o.n);
+
+			return Integer.compare(this.age, o.age);
 		}
 	}
 }
