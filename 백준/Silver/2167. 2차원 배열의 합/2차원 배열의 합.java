@@ -3,38 +3,39 @@ import java.util.*;
 
 public class Main {
 
-	static int N, M, K;
-	static int[][] arr, dp;
-	
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		arr = new int[N + 1][M + 1];
-		dp = new int[N + 1][M + 1];
-		for(int r = 1; r <= N; r++) {
-			st = new StringTokenizer(br.readLine());
-			for(int c = 1; c <= M; c++) 
-				arr[r][c] = Integer.parseInt(st.nextToken());
-		}
-		
-		for(int i = 1; i <= N; i++) 
-		    for(int j = 1; j <= M; j++) 
-		        dp[i][j] = arr[i][j] + dp[i-1][j] + dp[i][j-1] - dp[i-1][j-1];
-		
-		K = Integer.parseInt(br.readLine());
-		for(int k = 0; k < K; k++) {
-			st = new StringTokenizer(br.readLine());
-			int i = Integer.parseInt(st.nextToken());
-			int j = Integer.parseInt(st.nextToken());
-			int x = Integer.parseInt(st.nextToken());
-			int y = Integer.parseInt(st.nextToken());
-			
-			int result = dp[x][y] - dp[i-1][y] - dp[x][j-1] + dp[i-1][j-1];
-			System.out.println(result);
-		}
-	}
-}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int[][] arr = new int[N][M];
+
+        for (int r = 0; r < N; r++) {
+            st = new StringTokenizer(br.readLine());
+            for (int c = 0; c < M; c++) {
+                arr[r][c] = Integer.parseInt(st.nextToken());
+            }
+        }
+
+        int K = Integer.parseInt(br.readLine());
+
+        StringBuilder sb = new StringBuilder();
+        while (K-- > 0) {
+            st = new StringTokenizer(br.readLine());
+            int i1 = Integer.parseInt(st.nextToken());
+            int j1 = Integer.parseInt(st.nextToken());
+            int x1 = Integer.parseInt(st.nextToken());
+            int y1 = Integer.parseInt(st.nextToken());
+
+            int sum = 0;
+            for (int r = i1 - 1; r < x1; r++) {
+                for (int c = j1 - 1; c < y1; c++) {
+                    sum += arr[r][c];
+                }
+            }
+            sb.append(sum).append('\n');
+        }
+        System.out.print(sb.toString());
+    }
+}
